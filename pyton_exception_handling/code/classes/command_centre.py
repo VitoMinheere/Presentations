@@ -20,4 +20,15 @@ class CommandCentre:
             raise SignalLostException("Lost communication with command centre")
         else:
             return True
+
+    def generate_transmissions(self):
+        messages = [
+            "Message 1",
+            {"number": 5},
+            "Message 2",
+            5,
+            "Message 3"
+        ]
+        for message in messages:
+            yield message
             

@@ -2,6 +2,8 @@ from classes.fuel_tank import FuelTank, FuelLevelException, FuelTypeException
 from classes.command_centre import CommandCentre, SignalTooLowException, CommunicationException
 from classes.engine import Engine, IgnitionException
 
+from contextlib import suppress
+
 class Abort(Exception):
     pass
 
@@ -62,6 +64,18 @@ class Rocket:
             # TODO Upgrade to Python 3.11
             # e.add_note("Did you try flicking the switch?")
             raise StartUpAbort from e
+
+    def receive_transmissions(self):
+        transmission_generator = self.command_centre.generate_transmissions()
+        while True:
+            try:
+                transmission = next(transmission_generator)
+                with suppress((AttributeError, TypeError)):
+                    transmission = transmission.strip()
+                    print(f"Received: {transmission}")
+            except StopIteration:
+                print("End of transmission")
+                break
 
     def status(self):
         print(f"{self.name} is at an altitude of {self.altitude} and has {self.fuel_tank.volume} units of fuel.")
