@@ -11,7 +11,7 @@ class FuelLevelException(FuelTankException):
 
     Args:
         max_volume (int): The maximum amount that the tank can hold
-        volume (int): Volume of the fue l that will be added to the tank
+        volume (int): Volume of the fuel that will be added to the tank
         
     Attributes:
         value(int): Max amount of fuel that can be added to the tank

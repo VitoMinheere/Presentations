@@ -16,18 +16,17 @@ class Rocket:
     def __init__(self, name):
         self.name = name
         self.altitude = 0
-        self.allowed_fuel = "Hydrogen"
+        self.crew = []
         self.fuel_tank = FuelTank("Hydrogen", 100)
         self.command_centre = CommandCentre()
-        self.engine = Engine(1)
+        self.engine = Engine(motors=4)
+        self.startup_completed = False
         
     def launch(self):
-        if self.fuel > 0:
+        if self.startup_completed and self.fuel_tank.volume > 0:
             print(f"{self.name} launched!")
             self.altitude += 100
-            self.fuel -= 1
-        else:
-            print(f"{self.name} has no fuel left.")
+            self.fuel_tank.volume -= 1
 
     def refuel(self, fuel_type, amount):
         try:
