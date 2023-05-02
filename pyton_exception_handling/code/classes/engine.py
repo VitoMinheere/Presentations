@@ -48,10 +48,10 @@ class Engine:
             raise IgnitionError(motor)
         print(f"Motor {motor} fired up!")
 
-eg = Engine(motors=4)
+# eg = Engine(motors=4)
 
-async def check_engine():
-    result = await eg.apply_throttle()
-    return result
+# async def check_engine():
+#     result = await eg.apply_throttle()
+#     return result
 
-asyncio.run(check_engine())
+# asyncio.run(check_engine())

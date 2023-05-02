@@ -4,6 +4,8 @@ from classes.engine import Engine, IgnitionError
 
 from contextlib import suppress
 
+PRESENTATION_DONE = False
+
 class Abort(Exception):
     pass
 
@@ -11,6 +13,10 @@ class StartUpAbort(Abort):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
     
+
+class RocketNotReadyError(Exception):
+    pass
+
 
 class Rocket:
     def __init__(self, name):
@@ -21,12 +27,17 @@ class Rocket:
         self.command_centre = CommandCentre()
         self.engine = Engine(motors=4)
         self.startup_completed = False
+
+    def __str__(self):
+        return f"Rocket {self.name} has {self.engine.motors} motors and is at an altitude of {self.altitude} meters"
         
     def launch(self):
-        if self.startup_completed and self.fuel_tank.volume > 0:
+        if self.startup_completed and self.fuel_tank.volume > 0 and PRESENTATION_DONE:
             print(f"{self.name} launched!")
             self.altitude += 100
             self.fuel_tank.volume -= 1
+        else:
+            raise RocketNotReadyError("Unfortunately this part is not yet done")
 
     def refuel(self, fuel_type, amount):
         try:

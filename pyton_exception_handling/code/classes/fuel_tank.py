@@ -29,20 +29,17 @@ class FuelTank:
         self.max_volume = max_volume 
 
     def refuel(self, fuel_type, amount):
-        """_summary_
-
-        Args:
-            fuel_type (_type_): _description_
-            amount (_type_): _description_
-
+        """
         Raises:
             FuelTypeException: If fuel_type is not the correct fuel for the rocket
             FuelLevelException: If the amount of fuel to add would overflow the tank
         """        
         if fuel_type != self.fuel_type:
             raise FuelTypeError(fuel_type)
+
         elif (self.volume + amount) > self.max_volume:
-            raise FuelLevelException(self.max_volume, self.volume)
+            raise FuelLevelError(self.max_volume, self.volume)
+
         else:
             self.volume += amount
             print(f"Fuel tank refueled. Fuel level is now {self.volume} liter.")
