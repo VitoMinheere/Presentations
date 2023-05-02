@@ -4,7 +4,7 @@ import random
 class MotorError(Exception):
     pass
 
-class IgnitionException(MotorError):
+class IgnitionError(MotorError):
     def __init__(self, motor) -> None:
         self.motor = motor
         message = f"Motor {motor} failed to ignite"
@@ -20,7 +20,7 @@ class Engine:
 
     def check_ignition(self):
         if not self.ignition:
-            raise IgnitionException("Engine has no ignition")
+            raise IgnitionError("Engine has no ignition")
         return self.ignition
             
     async def apply_throttle(self):
@@ -30,7 +30,7 @@ class Engine:
                     tg.create_task(
                         self.fire_engine(x)
                     )
-        except* IgnitionException as e:
+        except* IgnitionError as e:
             print(f"Handling IgnitionErrors: {e.exceptions}")
             print(e.exceptions)
         except* MotorError as e:
@@ -45,7 +45,7 @@ class Engine:
             raise MotorError(f"Something went wrong in motor {motor}")
         elif engine_fires_chance >= 0.8:
             print(f"Motor {motor} failed to fire")
-            raise IgnitionException(motor)
+            raise IgnitionError(motor)
         print(f"Motor {motor} fired up!")
 
 eg = Engine(motors=4)

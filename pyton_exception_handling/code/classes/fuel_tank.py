@@ -1,12 +1,12 @@
-class FuelTankException(Exception):
+class FuelTankError(Exception):
     pass
 
-class FuelTypeException(FuelTankException):
+class FuelTypeError(FuelTankError):
     def __init__(self, fuel_type):
         message = f"Invalid fuel type: {fuel_type}. Only 'Hydrogen' fuel is allowed."
         super().__init__(message)
 
-class FuelLevelException(FuelTankException):
+class FuelLevelError(FuelTankError):
     """_summary_
 
     Args:
@@ -40,7 +40,7 @@ class FuelTank:
             FuelLevelException: If the amount of fuel to add would overflow the tank
         """        
         if fuel_type != self.fuel_type:
-            raise FuelTypeException(fuel_type)
+            raise FuelTypeError(fuel_type)
         elif (self.volume + amount) > self.max_volume:
             raise FuelLevelException(self.max_volume, self.volume)
         else:

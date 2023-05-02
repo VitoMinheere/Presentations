@@ -1,6 +1,6 @@
-from classes.fuel_tank import FuelTank, FuelLevelException, FuelTypeException
-from classes.command_centre import CommandCentre, SignalTooLowException, CommunicationException
-from classes.engine import Engine, IgnitionException
+from classes.fuel_tank import FuelTank, FuelLevelError, FuelTypeError
+from classes.command_centre import CommandCentre, SignalTooLowError, CommunicationError
+from classes.engine import Engine, IgnitionError
 
 from contextlib import suppress
 
@@ -31,10 +31,10 @@ class Rocket:
     def refuel(self, fuel_type, amount):
         try:
             self.fuel_tank.refuel(fuel_type, amount)
-        except FuelTypeException as e:
+        except FuelTypeError as e:
             print("Switching to correct fuel and retrying")
             self.refuel(self.fuel_tank.fuel_type, amount)
-        except FuelLevelException as e:
+        except FuelLevelError as e:
             print("Setting correct fuel amount and retrying")
             self.refuel(fuel_type, e.value)
         else:
@@ -43,11 +43,11 @@ class Rocket:
     def test_communication(self):
         try:
             self.command_centre.check_communication()
-        except SignalTooLowException:
+        except SignalTooLowError:
             print("Signal is not strong enough, starting signal booster")
             self.command_centre.signal += 20
             self.command_centre.check_communication()
-        except CommunicationException as e:
+        except CommunicationError as e:
             print(e)
             print("Something went wrong while communicating with the command centre")
             raise StartUpAbort from e
@@ -57,8 +57,8 @@ class Rocket:
     def check_ignition(self):
         try:
             self.engine.check_ignition()
-        except IgnitionException as e:
-            raise StartUpAbort from e
+        except IgnitionError as e:
+            raise StartUpAbort("Aborted startup do to the above error") from e
 
     def receive_transmissions(self):
         transmission_generator = self.command_centre.generate_transmissions()

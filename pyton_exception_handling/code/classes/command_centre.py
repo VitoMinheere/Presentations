@@ -1,11 +1,11 @@
-class CommunicationException(Exception):
+class CommunicationError(Exception):
     pass
 
-class SignalTooLowException(CommunicationException):
+class SignalTooLowError(CommunicationError):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
         
-class SignalLostException(CommunicationException):
+class SignalLostError(CommunicationError):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
@@ -15,9 +15,9 @@ class CommandCentre:
 
     def check_communication(self):
         if self.signal < 20 and self.signal > 0:
-            raise SignalTooLowException()
+            raise SignalTooLowError()
         elif self.signal == 0:
-            raise SignalLostException("Lost communication with command centre")
+            raise SignalLostError("Lost communication with command centre")
         else:
             return True
 
