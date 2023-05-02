@@ -32,11 +32,9 @@ class Rocket:
         try:
             self.fuel_tank.refuel(fuel_type, amount)
         except FuelTypeException as e:
-            print(e)
-            print("Grabbing correct fuel and retrying")
-            self.refuel("Hydrogen", amount)
+            print("Switching to correct fuel and retrying")
+            self.refuel(self.fuel_tank.fuel_type, amount)
         except FuelLevelException as e:
-            print(e)
             print("Setting correct fuel amount and retrying")
             self.refuel(fuel_type, e.value)
         else:
@@ -60,8 +58,6 @@ class Rocket:
         try:
             self.engine.check_ignition()
         except IgnitionException as e:
-            # TODO Upgrade to Python 3.11
-            # e.add_note("Did you try flicking the switch?")
             raise StartUpAbort from e
 
     def receive_transmissions(self):
