@@ -1,10 +1,10 @@
-from classes.fuel_tank import FuelTank, FuelLevelError, FuelTypeError
+from classes.fuel_tank import FuelTank, FuelLevelError, FuelTypeError, FuelTankError
 from classes.command_centre import CommandCentre, SignalTooLowError, CommunicationError
-from classes.engine import Engine, IgnitionError
+from classes.engine import Engine, IgnitionError, EngineError
 
 from contextlib import suppress
 
-PRESENTATION_DONE = False
+PRESENTATION_DONE = True
 
 class Abort(Exception):
     pass
@@ -25,29 +25,37 @@ class Rocket:
         self.crew = []
         self.fuel_tank = FuelTank("Hydrogen", 100)
         self.command_centre = CommandCentre()
-        self.engine = Engine(motors=4)
+        self.engine = Engine(units=4)
         self.startup_completed = False
 
     def __str__(self):
-        return f"Rocket {self.name} has {self.engine.motors} motors and is at an altitude of {self.altitude} meters"
+        return f"Rocket {self.name} has {self.engine.units} engines and is at an altitude of {self.altitude} meters"
         
-    def launch(self):
-        if self.startup_completed and self.fuel_tank.volume > 0 and PRESENTATION_DONE:
-            print(f"{self.name} launched!")
-            self.altitude += 100
-            self.fuel_tank.volume -= 1
-        else:
-            raise RocketNotReadyError("Unfortunately this part is not yet done")
+    async def launch(self):
+        if not self.startup_completed:
+            raise RocketNotReadyError("Please run through the startup sequence before trying to launch")
+
+        if self.fuel_tank.volume == 0:
+            raise RocketNotReadyError("The rocket has no fuel. Refuel the rocket before launch")
+
+        try:
+            print("Applying throttle to the engine")
+            await self.engine.apply_throttle()
+        except ExceptionGroup as e:
+            if len(e.exceptions) <= 2:
+                print("Atleast 2 engines fired, launching anyway")
+            else:
+                print("Launch failed")
+
+        print(f"{self.name} launched!")
+        self.altitude += 100
+        self.fuel_tank.volume -= 1
 
     def refuel(self, fuel_type, amount):
         try:
             self.fuel_tank.refuel(fuel_type, amount)
-        except FuelTypeError as e:
-            print("Switching to correct fuel and retrying")
-            self.refuel(self.fuel_tank.fuel_type, amount)
-        except FuelLevelError as e:
-            print("Setting correct fuel amount and retrying")
-            self.refuel(fuel_type, e.value)
+        except FuelTankError as e:
+            raise RocketNotReadyError("Can't launch Rocket today") from e
         else:
             print(f"{self.name} refueled.")
 
@@ -88,7 +96,7 @@ class Rocket:
 
     def startup_sequence(self):
         try:
-            self.refuel("Diesel", 110) 
+            self.refuel("Hydrogen", 100) 
             self.test_communication()
             self.check_ignition()
         except StartUpAbort as abort:
@@ -96,6 +104,8 @@ class Rocket:
             raise abort
         else:
             print("All systems are go!")
+            print("Startup sequence completed. Ready to launch")
+            self.startup_completed = True
         finally:
-            print("Completed startup check procedure")
+            print("Finished startup check procedure")
             
